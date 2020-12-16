@@ -11,7 +11,8 @@ __pycache__/
 .DS_Store
 
 /data/*.csv
-/data/videos/
-/data/raw/*
+/data/videos/*
+/data/raw/abnormal/*
+/data/raw/normal/*
 weights/*
 vidaug/
