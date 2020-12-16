@@ -2,7 +2,7 @@
 
 まずは生データを配置する必要があります．
 normal 群の avi ファイルを ` data/raw/normal` に配置
-abnormal 群のあ avi ファイルを ` data/raw/abnormal` に配置
+abnormal 群の avi ファイルを ` data/raw/abnormal` に配置
 
 ## データの resize と FileList.csv の作成
 
