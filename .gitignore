@@ -1,0 +1,17 @@
+.ipynb_checkpoints/
+__pycache__/
+*.swp
+echonet.cfg
+.echonet.cfg
+*.pyc
+echonet.egg-info/
+a4c-video-dir/
+attention_maps/
+__pycache__/
+.DS_Store
+
+/data/*.csv
+/data/videos/
+/data/raw/*
+weights/*
+vidaug/
