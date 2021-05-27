@@ -1,16 +1,16 @@
+
+import pathlib
 import os
 import collections
 
 import numpy as np
 import torch.utils.data
 import echonet
-import sys
 
-
-class Echo(torch.utils.data.Dataset):
+class Echo_Aug(torch.utils.data.Dataset):
     def __init__(self,
-                 root="./data",
-                 filelist_name = "FileList.csv"
+                 root="./data/",
+                 file_list = '.FileList.csv',
                  split="train",
                  mean=0., std=1.,
                  length=16, period=2,
@@ -21,11 +21,7 @@ class Echo(torch.utils.data.Dataset):
                  target_transform=None,
                  external_test_location=None):
 
-        if root is None:
-            root = os.getcwd()
-
-
-        self.folder = os.path.join(root, "data", "videos")
+        self.folder = pathlib.Path(root)
         self.split = split
         self.mean = mean
         self.std = std
@@ -44,7 +40,7 @@ class Echo(torch.utils.data.Dataset):
         self.fnames = []
         self.targets = []
 
-        with open(os.path.join(root, filelist_name)) as f:
+        with open(os.path.join(root, file_list)) as f:
             self.header = f.readline().strip().split(",")
             filenameIndex = self.header.index("filename")
             splitIndex = self.header.index("split")
@@ -57,18 +53,31 @@ class Echo(torch.utils.data.Dataset):
                 target = int(lineSplit[targetIndex])
 
                 if split in ["all", fileMode] :
-                    for dirname in os.listdir(self.folder):
-                        fileName = os.path.join(self.folder, dirname, fileName)
-                        self.fnames.append(fileName)
-                        self.targets.append(target)
-
+                    self.fnames.append(fileName)
+                    self.targets.append(target)
 
 
     def __getitem__(self, index):
         filename = self.fnames[index]
+        if "Downsample" in filename:
+            folder_path = os.path.join(root, "Downsample")
+        elif "GaussianBlur" in filename:
+            folder_path = os.path.join(root, "GaussianBlur")
+        elif "HorizontalFlip" in filename:
+            folder_path = os.path.join(root, "HorizontalFlip")
+        elif "InvertColor" in filename:
+            folder_path = os.path.join(root, "InvertColor")
+        elif "RandomRotate" in filename:
+            folder_path = os.path.join(root, "RandomRotate")
+        elif "Upsample" in filename:
+            folder_path = os.path.join(root, "Upsample")
+        else:
+            folder_path = os.path.join(root, "original")
+
+        video = os.path.join(folder_path, filename)
 
         # Load video into np.array
-        video = echonet.utils.loadvideo(filename).astype(np.float32)
+        video = echonet.utils.loadvideo(video).astype(np.float32)
 
         # Add simulated noise (black out random pixels)
         # 0 represents black at this point (video has not been normalized yet)
@@ -120,8 +129,8 @@ class Echo(torch.utils.data.Dataset):
         else:
             # Take random clips from video
             start = np.random.choice(f - (length - 1) * self.period, self.clips)
-            if self.split == "test":
-                start = [0]
+#             if self.split == "test":
+#                 start = [0]
 
 
         # Select random clips
