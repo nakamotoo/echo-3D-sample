@@ -1,3 +1,4 @@
+# coding: UTF-8
 import os, os.path
 import numpy as np
 import sys
@@ -10,12 +11,11 @@ from sklearn.metrics import roc_auc_score
 import echonet
 import torch.optim as optim
 import torch.nn as nn
-import torch.nn.functional as F
 
 print("\nNEW!!", sys.argv[1], sys.argv[2])
 
 modelname = sys.argv[1]
-DestinationForWeights = "../dynamic/output/video"
+DestinationForWeights = "weights/r2plus1d_18_32_2_pretrained.pt"
 
 model = torchvision.models.video.__dict__[modelname](pretrained=False)
 model.fc = torch.nn.Linear(model.fc.in_features, 1)
@@ -23,23 +23,19 @@ model.fc.bias.data[0] = 55.6
 
 if torch.cuda.is_available() and sys.argv[2] == "pretrained":
     print("cuda is available, pretrianed weights")
-    print(os.path.join(DestinationForWeights, modelname + "_32_2_pretrained",  "best.pt"))
-    device = torch.device(f'cuda:{0}')
-    model = torch.nn.DataParallel(model, device_ids=[0, 1]).cuda()
+    print("loading weight from ", DestinationForWeights)
+    device = torch.device('cuda:1')
+    model = torch.nn.DataParallel(model, device_ids=[1, 2]).cuda()
     model.to(device)
-    checkpoint = torch.load(os.path.join(DestinationForWeights, modelname + "_32_2_pretrained",  "best.pt"))
+    checkpoint = torch.load(DestinationForWeights)
     model.load_state_dict(checkpoint['state_dict'])
     lr = 1e-5
-#     model.load_state_dict(checkpoint)
 elif torch.cuda.is_available() and sys.argv[2] == "random":
     print("cuda is available, random weights")
-    device = torch.device(f'cuda:{0}')
-    model = torch.nn.DataParallel(model, device_ids=[0, 1, 2]).cuda()
+    device = torch.device('cuda:1')
+    model = torch.nn.DataParallel(model, device_ids=[1, 2]).cuda()
     model.to(device)
     lr = 1e-5
-    # checkpoint = torch.load(os.path.join(DestinationForWeights, modelname + "_32_2_random",  "best.pt"))
-    # model.load_state_dict(checkpoint['state_dict'])
-#     model.load_state_dict(checkpoint)
 
 criterion = nn.BCEWithLogitsLoss(reduction="none")
 

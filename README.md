@@ -15,6 +15,9 @@ abnormal 群の avi ファイルを ` data/raw/abnormal` に配置
 ` data/data_augmentation.ipynb ` でデータオーグメンテーション を行います．
 使用するライブラリ vidaug を別途インストールする必要があります.手順がちょっとややこしいのですが，コード内にインストール方法を記載しています．
 
+## スタンフォードのR2+1Dの学習済みの重み
+`wget https://github.com/douyang/EchoNetDynamic/releases/download/v1.0.0/r2plus1d_18_32_2_pretrained.pt`
+
 ## 学習
 
 ` train.ipynb ` で学習を行います．

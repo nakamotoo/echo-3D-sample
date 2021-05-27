@@ -9,8 +9,8 @@ import echonet
 
 class Echo_Aug(torch.utils.data.Dataset):
     def __init__(self,
-                 root="./data/",
-                 file_list = '.FileList.csv',
+                 root="./data",
+                 file_list = 'FileList_Aug.csv',
                  split="train",
                  mean=0., std=1.,
                  length=16, period=2,
@@ -21,7 +21,7 @@ class Echo_Aug(torch.utils.data.Dataset):
                  target_transform=None,
                  external_test_location=None):
 
-        self.folder = pathlib.Path(root)
+        self.folder = os.path.join(root, "videos")
         self.split = split
         self.mean = mean
         self.std = std
@@ -60,19 +60,25 @@ class Echo_Aug(torch.utils.data.Dataset):
     def __getitem__(self, index):
         filename = self.fnames[index]
         if "Downsample" in filename:
-            folder_path = os.path.join(root, "Downsample")
+            folder_path = os.path.join(self.folder, "Downsample")
+            filename = "_".join(filename.split("_")[1:])
         elif "GaussianBlur" in filename:
-            folder_path = os.path.join(root, "GaussianBlur")
+            folder_path = os.path.join(self.folder, "GaussianBlur")
+            filename = "_".join(filename.split("_")[1:])
         elif "HorizontalFlip" in filename:
-            folder_path = os.path.join(root, "HorizontalFlip")
+            folder_path = os.path.join(self.folder, "HorizontalFlip")
+            filename = "_".join(filename.split("_")[1:])
         elif "InvertColor" in filename:
-            folder_path = os.path.join(root, "InvertColor")
+            folder_path = os.path.join(self.folder, "InvertColor")
+            filename = "_".join(filename.split("_")[1:])
         elif "RandomRotate" in filename:
-            folder_path = os.path.join(root, "RandomRotate")
+            folder_path = os.path.join(self.folder, "RandomRotate")
+            filename = "_".join(filename.split("_")[1:])
         elif "Upsample" in filename:
-            folder_path = os.path.join(root, "Upsample")
+            folder_path = os.path.join(self.folder, "Upsample")
+            filename = "_".join(filename.split("_")[1:])
         else:
-            folder_path = os.path.join(root, "original")
+            folder_path = os.path.join(self.folder, "original")
 
         video = os.path.join(folder_path, filename)
 
@@ -159,11 +165,3 @@ class Echo_Aug(torch.utils.data.Dataset):
 
     def __len__(self):
         return len(self.fnames)
-
-def _defaultdict_of_lists():
-    """Returns a defaultdict of lists.
-    This is used to avoid issues with Windows (if this function is anonymous,
-    the Echo dataset cannot be used in a dataloader).
-    """
-
-    return collections.defaultdict(list)

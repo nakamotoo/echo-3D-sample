@@ -10,7 +10,7 @@ import sys
 class Echo(torch.utils.data.Dataset):
     def __init__(self,
                  root="./data",
-                 filelist_name = "FileList.csv"
+                 filelist_name = "FileList.csv",
                  split="train",
                  mean=0., std=1.,
                  length=16, period=2,
@@ -25,7 +25,7 @@ class Echo(torch.utils.data.Dataset):
             root = os.getcwd()
 
 
-        self.folder = os.path.join(root, "data", "videos")
+        self.folder = os.path.join(root, "videos")
         self.split = split
         self.mean = mean
         self.std = std
@@ -150,11 +150,3 @@ class Echo(torch.utils.data.Dataset):
 
     def __len__(self):
         return len(self.fnames)
-
-def _defaultdict_of_lists():
-    """Returns a defaultdict of lists.
-    This is used to avoid issues with Windows (if this function is anonymous,
-    the Echo dataset cannot be used in a dataloader).
-    """
-
-    return collections.defaultdict(list)
